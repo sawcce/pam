@@ -21,16 +21,6 @@ render (Templated _ renderer args) = render $ renderer args
 render (Fragment children) = concatMap render children
 render Empty = ""
 
-html = Tag "html"
-
-body = Tag "body"
-
-h1 = Tag "h1"
-
-h2 = Tag "h2"
-
-p = Tag "p"
-
-cn x = ("cn", x)
+cn x = ("class", x)
 
 lang x = ("lang", x)

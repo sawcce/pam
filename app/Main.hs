@@ -2,6 +2,7 @@ module Main where
 
 import Spam.El
 import Spam.El.Html
+import Spam.Hey
 
 docHead :: El
 docHead =
@@ -53,10 +54,13 @@ page =
             title $ String "A website to do stuff!",
             paragraph $ String "Have a great day :)",
             quote "Haskell is great!",
-            filterOdds [1 .. 10000]
+            filterOdds [1 .. 1000]
           ]
     )
 
 main :: IO ()
 main = do
-  writeFile "page.html" (render page)
+  let t :: Operation Void Int = (20 :: Int) .+ (10 :: Int)
+  let z :: Operation Void Int = t .* t
+  print $ convert Void z
+  print (evaluate Void z :: Int)

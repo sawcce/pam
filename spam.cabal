@@ -63,6 +63,7 @@ library
         Spam
         Spam.El
         Spam.El.Html
+        Spam.Hey
 
 
     -- Modules included in this library but not exported.

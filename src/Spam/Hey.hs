@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -14,7 +15,7 @@ class Evaluate ctx input output where
   evaluate :: ctx -> input -> output
 
 class Convert ctx input where
-  convert :: ctx -> input -> String
+  convert :: input -> String
 
 -- class (Evaluate ctx input output, Convert ctx input) => Salute ctx input output
 class (Evaluate c i n, Convert c i) => HeyConstraint c i n
@@ -25,31 +26,43 @@ instance Evaluate ctx Bool Bool where
   evaluate _ x = x
 
 instance Convert ctx Bool where
-  convert _ True = "true"
-  convert _ False = "false"
+  convert True = "true"
+  convert False = "false"
 
 instance Evaluate ctx Int Int where
   evaluate _ x = x
 
 instance Convert ctx Int where
-  convert _ = show
+  convert = show
 
-data Operation c n where
-  Add :: forall c i i' n. (Num n, HeyConstraint c i n, HeyConstraint c i' n) => i -> i' -> Operation c n
-  Sub :: forall c i i' n. (Num n, HeyConstraint c i n, HeyConstraint c i' n) => i -> i' -> Operation c n
-  Mul :: forall c i i' n. (Num n, HeyConstraint c i n, HeyConstraint c i' n) => i -> i' -> Operation c n
+data Operation c i n where
+  Add :: forall c i i' n. (Num n, HeyConstraint c i n, Convert c i, HeyConstraint c i' n) => i -> i' -> Operation c i n
+  Sub :: forall c i i' n. (Num n, HeyConstraint c i n, Convert c i, HeyConstraint c i' n) => i -> i' -> Operation c i n
+  Mul :: forall c i i' n. (Num n, HeyConstraint c i n, Convert c i, HeyConstraint c i' n) => i -> i' -> Operation c i n
 
-instance Evaluate ctx (Operation ctx n) n where
-  evaluate :: ctx -> Operation ctx n -> n
-  evaluate c (Add x y) = evaluate c x + evaluate c y
-  evaluate c (Sub x y) = evaluate c x - evaluate c y
-  evaluate c (Mul x y) = evaluate c x * evaluate c y
+instance forall c n i. (Num n, Convert c i) => Convert c (Operation c i n) where
+  convert (Add x y) = "(" <> convert (x :: i) <> "+" <> convert y <> ")"
+  convert (Sub x y) = "(" <> convert x <> "-" <> convert y <> ")"
+  convert (Mul x y) = "(" <> convert x <> "*" <> convert y <> ")"
 
-instance Convert ctx (Operation ctx n) where
-  convert :: ctx -> Operation ctx n -> String
-  convert c (Add x y) = "(" <> convert c x <> "+" <> convert c y <> ")"
-  convert c (Sub x y) = "(" <> convert c x <> "-" <> convert c y <> ")"
-  convert c (Mul x y) = "(" <> convert c x <> "*" <> convert c y <> ")"
+-- instance (Num n, HeyConstraint ctx i n, HeyConstraint ctx i' n) => Evaluate ctx (Operation ctx n) n where
+--   evaluate :: ctx -> Operation ctx n -> n
+--   evaluate c (Add x y) = evaluate c x + evaluate c y
+--   evaluate c (Sub x y) = evaluate c x - evaluate c y
+--   evaluate c (Mul x y) = evaluate c x * evaluate c y
+
+-- instance (Num n) => Convert c (Operation ctx n) where
+--   convert :: Operation ctx n -> String
+--   convert (Add x y) = "(" <> convert x <> "+" <> convert y <> ")"
+--   convert (Sub x y) = "(" <> convert x <> "-" <> convert y <> ")"
+--   convert (Mul x y) = "(" <> convert x <> "*" <> convert y <> ")"
+
+data Function c o where
+  Function :: forall c i o. (HeyConstraint c i o) => i -> Function c o
+
+instance Convert c (Function c o) where
+  convert :: Function c o -> String
+  convert (Function i) = "(x => " <> convert i <> ")"
 
 -- (.+) :: forall c a b n. (Num n, HeyConstraint c a n, HeyConstraint c b n) => a -> b -> Operation c a b n
 a .+ b = Add a b

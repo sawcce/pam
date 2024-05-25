@@ -58,9 +58,18 @@ page =
           ]
     )
 
+data Args = Args Bool
+
+data Arg = Arg
+
+instance Evaluate Args Arg Bool where
+  evaluate (Args b) _ = b
+
+instance Convert Args Arg where
+  convert _ _ = "x"
+
 main :: IO ()
 main = do
-  let t :: Operation Void Int = (20 :: Int) .+ (10 :: Int)
-  let z :: Operation Void Int = t .* t
-  print $ convert Void z
-  print (evaluate Void z :: Int)
+  let t2 :: Function Args Bool = Function Arg
+  print $ evaluate (Args True) t2
+  print $ convert (Args True) t2

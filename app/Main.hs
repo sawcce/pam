@@ -1,8 +1,14 @@
+{-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
+{-# HLINT ignore "Use newtype instead of data" #-}
+
 module Main where
 
 import Spam.El
 import Spam.El.Html
 import Spam.Hey
+import Spam.Hey.Template
 
 docHead :: El
 docHead =
@@ -58,18 +64,35 @@ page =
           ]
     )
 
-data Args = Args Bool
+-- data Args = Args Bool
 
-data Arg = Arg
+-- data Arg = Arg
 
-instance Evaluate Args Arg Bool where
-  evaluate (Args b) _ = b
+-- instance Evaluate Args Arg Bool where
+--   evaluate (Args b) _ = b
 
-instance Convert Args Arg where
-  convert _ _ = "x"
+-- instance Convert Args Arg where
+--   convert _ _ = "x"
+
+-- $(test [("Age", ''Int)])
+
+newtype CounterState = CounterState
+  { count :: Int
+  }
+
+$( model
+     [d|
+       data Counter = Counter {xyz :: Int} deriving (Show)
+
+       data Cube = Cube {x :: Int, y :: Int, z :: Int}
+       |]
+ )
+
+type CounterFunc x = (CounterArgxyz -> x)
+
+test :: CounterFunc (Operation Counter Int)
+test x = (10 :: Int) .+ x
 
 main :: IO ()
 main = do
-  let t2 :: Function Args Bool = Function Arg
-  print $ evaluate (Args True) t2
-  print $ convert (Args True) t2
+  print $ evaluate Counter {xyz = 434} CounterArgxyz

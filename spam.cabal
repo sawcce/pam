@@ -64,6 +64,7 @@ library
         Spam.El
         Spam.El.Html
         Spam.Hey
+        Spam.Hey.Template
 
 
     -- Modules included in this library but not exported.
@@ -73,7 +74,9 @@ library
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.17.2.1
+    build-depends:    
+        base ^>=4.17.2.1,
+        template-haskell ^>= 2.19
 
     -- Directories containing source files.
     hs-source-dirs:   src

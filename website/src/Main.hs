@@ -1,14 +1,14 @@
 module Main where
 
-import App (appName)
+import App (appName, appRoutes)
 import Spam
 
 app :: Kitchen
 app =
   Kitchen
     { name = appName,
-      env = Prod
+      routes = appRoutes
     }
 
 main :: IO ()
-main = print app
+main = serve Prod app

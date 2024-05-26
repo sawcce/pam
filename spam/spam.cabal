@@ -75,7 +75,9 @@ library
     -- Other library packages from which modules are imported.
     build-depends:    
         base ^>=4.17.2.1,
-        scotty ^>=0.22
+        warp ^>= 3.4.1,
+        wai ^>= 3.2.4,
+        http-types
 
     -- Directories containing source files.
     hs-source-dirs:   src

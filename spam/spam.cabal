@@ -64,6 +64,8 @@ library
         Spam.El
         Spam.El.Html
         Spam.Hey
+        Spam.Log
+        Spam.Dev
 
 
     -- Modules included in this library but not exported.
@@ -77,8 +79,16 @@ library
         base ^>=4.17.2.1,
         warp ^>= 3.4.1,
         wai ^>= 3.2.4,
-        http-types
+        http-types,
+        bytestring,
+        hint,
+        fsnotify,
+        process,
+        Cabal,
+        directory,
+        async
 
+    ghc-options: -threaded
     -- Directories containing source files.
     hs-source-dirs:   src
 

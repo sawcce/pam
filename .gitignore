@@ -1,2 +1,4 @@
 /.vscode
 /**/dist-newstyle
+/**/node_modules
+/**/.env
